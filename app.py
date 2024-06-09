@@ -54,8 +54,10 @@ def main():
 
         # Convert categorical features to numerical
         df['Tuition_fees_up_to_date'] = df['Tuition_fees_up_to_date'].map({'Yes': 1, 'No': 0})
-        df['Scholarship_holder'] = df['Scholarship_holder'].map({'Yes': 1, 'No': 0})
-        df['Debtor'] = df['Debtor'].map({'Yes': 1, 'No': 0})
+
+        # Ensure all other categorical columns are properly encoded
+        for col in ['Scholarship_holder', 'Application_mode', 'Gender', 'Debtor']:
+            df[col] = df[col].map({'Yes': 1, 'No': 0})
 
         # Predict
         prediction = model.predict(df)
