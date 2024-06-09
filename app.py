@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
 import streamlit as st
+import seaborn as sns
+import matplotlib.pyplot as plt
 from sklearn import preprocessing
 from sklearn.svm import SVC
 from sklearn.decomposition import PCA
@@ -11,10 +13,21 @@ model = pickle.load(open('model.pkl', 'rb'))
 encoder_dict = pickle.load(open('encoder.pkl', 'rb'))
 pca_weights = pickle.load(open('pca_weights.pkl', 'rb'))
 
-cols = ['Curricular_units_2nd_sem_approved', 'Curricular_units_2nd_sem_grade',
-        'Curricular_units_1st_sem_approved', 'Curricular_units_1st_sem_grade',
-        'Tuition_fees_up_to_date', 'Scholarship_holder', 'Application_mode',
-        'Gender', 'Debtor', 'Age_at_enrollment']
+# Korelasi antar fitur
+correlation_values = {
+    'Curricular_units_2nd_sem_approved': 0.653995,
+    'Curricular_units_2nd_sem_grade': 0.605350,
+    'Curricular_units_1st_sem_approved': 0.554881,
+    'Curricular_units_1st_sem_grade': 0.519927,
+    'Tuition_fees_up_to_date': 0.442138,
+    'Scholarship_holder': 0.313018,
+    'Application_mode': -0.244507,
+    'Gender': -0.251955,
+    'Debtor': -0.267207,
+    'Age_at_enrollment': -0.267229
+}
+
+cols = list(correlation_values.keys())
 
 def encode_features(df, encoder_dict):
     for feature, encoder in encoder_dict.items():
@@ -30,6 +43,12 @@ def main():
     </div>
     """
     st.markdown(html_temp, unsafe_allow_html=True)
+
+    # Menambahkan heatmap korelasi
+    st.subheader("Correlation Heatmap")
+    plt.figure(figsize=(10, 6))
+    sns.heatmap(pd.DataFrame(correlation_values, index=[0]).T, annot=True, cmap='coolwarm', vmin=-1, vmax=1)
+    st.pyplot()
 
     curricular_units_2nd_sem_approved = st.text_input("Curricular Units 2nd Semester Approved", "0")
     curricular_units_2nd_sem_grade = st.text_input("Curricular Units 2nd Semester Grade", "0")
