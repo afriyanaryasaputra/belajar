@@ -13,8 +13,8 @@ pca_weights = pickle.load(open('pca_weights.pkl', 'rb'))
 
 cols = ['Curricular_units_2nd_sem_approved', 'Curricular_units_2nd_sem_grade',
         'Curricular_units_1st_sem_approved', 'Curricular_units_1st_sem_grade',
-        'Tuition_fees_up_to_date', 'Scholarship_holder', 'Application_mode_Online',
-        'Application_mode_Offline', 'Gender', 'Debtor', 'Age_at_enrollment']
+        'Tuition_fees_up_to_date', 'Scholarship_holder', 'Application_mode',
+        'Gender', 'Debtor', 'Age_at_enrollment']
 
 def encode_features(df, encoder_dict):
     for feature, encoder in encoder_dict.items():
@@ -43,29 +43,22 @@ def main():
     age_at_enrollment = st.text_input("Age at Enrollment", "0")
 
     if st.button("Predict"):
-        # Convert categorical inputs to numerical representation
-        tuition_fees_up_to_date = 1 if tuition_fees_up_to_date == "Yes" else 0
-        scholarship_holder = 1 if scholarship_holder == "Yes" else 0
-        debtor = 1 if debtor == "Yes" else 0
-
-        # Perform one-hot encoding for 'Application_mode'
-        application_mode_online = 1 if application_mode == "Online" else 0
-        application_mode_offline = 1 if application_mode == "Offline" else 0
-
+        # Encode categorical features
         features = [[curricular_units_2nd_sem_approved, curricular_units_2nd_sem_grade,
                      curricular_units_1st_sem_approved, curricular_units_1st_sem_grade,
-                     tuition_fees_up_to_date, scholarship_holder, application_mode_online,
-                     application_mode_offline, gender, debtor, age_at_enrollment]]
+                     tuition_fees_up_to_date, scholarship_holder, application_mode,
+                     gender, debtor, age_at_enrollment]]
         df = pd.DataFrame(features, columns=cols)
 
-        # Encode categorical features
-        df_encoded = encode_features(df.copy(), encoder_dict)
+        df = encode_features(df, encoder_dict)
 
-        # Apply PCA transformation
-        df_pca = np.dot(df_encoded, pca_weights.T)
+        # Convert categorical features to numerical
+        df['Tuition_fees_up_to_date'] = df['Tuition_fees_up_to_date'].map({'Yes': 1, 'No': 0})
+        df['Scholarship_holder'] = df['Scholarship_holder'].map({'Yes': 1, 'No': 0})
+        df['Debtor'] = df['Debtor'].map({'Yes': 1, 'No': 0})
 
         # Predict
-        prediction = model.predict(df_pca)
+        prediction = model.predict(df)
 
         output = int(prediction[0])
         if output == 1:
