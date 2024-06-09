@@ -23,7 +23,7 @@ def encode_features(df, encoder_dict):
     return df
 
 def main():
-    st.title("Graduation Predictor")
+    st.title("Jaya Jaya Institut")
     html_temp = """
     <div style="background:#025246 ;padding:10px">
     <h2 style="color:white;text-align:center;">Graduation Prediction App</h2>
