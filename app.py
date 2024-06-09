@@ -43,6 +43,11 @@ def main():
     age_at_enrollment = st.text_input("Age at Enrollment", "0")
 
     if st.button("Predict"):
+        # Convert categorical inputs to numerical representation
+        tuition_fees_up_to_date = 1 if tuition_fees_up_to_date == "Yes" else 0
+        scholarship_holder = 1 if scholarship_holder == "Yes" else 0
+        debtor = 1 if debtor == "Yes" else 0
+
         features = [[curricular_units_2nd_sem_approved, curricular_units_2nd_sem_grade,
                      curricular_units_1st_sem_approved, curricular_units_1st_sem_grade,
                      tuition_fees_up_to_date, scholarship_holder, application_mode,
