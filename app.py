@@ -24,7 +24,6 @@ def main():
     """
     st.markdown(html_temp, unsafe_allow_html=True)
 
-    # Input fitur-fitur yang akan digunakan
     curricular_units_2nd_sem_approved = st.text_input("Curricular Units 2nd Semester Approved", "0")
     curricular_units_2nd_sem_grade = st.text_input("Curricular Units 2nd Semester Grade", "0")
     curricular_units_1st_sem_approved = st.text_input("Curricular Units 1st Semester Approved", "0")
@@ -44,7 +43,6 @@ def main():
                      gender, debtor, age_at_enrollment]]
         df = pd.DataFrame(features, columns=selected_cols)
 
-        # Ubah fitur kategorikal menjadi numerik jika perlu
         df['Tuition_fees_up_to_date'] = df['Tuition_fees_up_to_date'].map({'Yes': 1, 'No': 0})
         df['Scholarship_holder'] = df['Scholarship_holder'].map({'Yes': 1, 'No': 0})
         df['Application_mode'] = df['Application_mode'].map({'Online': 1, 'Offline': 0})
@@ -54,7 +52,7 @@ def main():
         # Prediksi
         prediction = model.predict(df)
 
-        # Tampilkan hasil prediksi
+        # Hasil prediksi
         output = int(prediction[0])
         if output == 1:
             text = "Will Graduate"
