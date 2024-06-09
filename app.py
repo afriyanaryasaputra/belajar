@@ -32,8 +32,15 @@ cols = list(correlation_values.keys())
 def encode_features(df, encoder_dict):
     for feature, encoder in encoder_dict.items():
         if feature in df.columns:
-            df[feature] = encoder.transform(df[feature])
+            # Tambahkan penanganan nilai tidak dikenal
+            df[feature] = df[feature].apply(lambda x: encoder.transform([x])[0] if x in encoder.classes_ else encoder.transform([encoder.classes_[0]])[0])
     return df
+
+def scale_features(df):
+    scaler = preprocessing.StandardScaler()
+    scaled_features = scaler.fit_transform(df)
+    df_scaled = pd.DataFrame(scaled_features, columns=df.columns)
+    return df_scaled
 
 def main():
     st.title("Jaya Jaya Institut")
@@ -74,12 +81,20 @@ def main():
         # Convert categorical features to numerical
         df['Tuition_fees_up_to_date'] = df['Tuition_fees_up_to_date'].map({'Yes': 1, 'No': 0})
 
-        # Ensure all other categorical columns are properly encoded
         for col in ['Scholarship_holder', 'Application_mode', 'Gender', 'Debtor']:
             df[col] = df[col].map({'Yes': 1, 'No': 0})
 
+        # Scale numerical features
+        df_scaled = scale_features(df[['Curricular_units_2nd_sem_approved', 'Curricular_units_2nd_sem_grade',
+                                        'Curricular_units_1st_sem_approved', 'Curricular_units_1st_sem_grade',
+                                        'Age_at_enrollment']])
+
+        df_final = pd.concat([df_scaled, df.drop(['Curricular_units_2nd_sem_approved', 'Curricular_units_2nd_sem_grade',
+                                                  'Curricular_units_1st_sem_approved', 'Curricular_units_1st_sem_grade',
+                                                  'Age_at_enrollment'], axis=1)], axis=1)
+
         # Predict
-        prediction = model.predict(df)
+        prediction = model.predict(df_final)
 
         output = int(prediction[0])
         if output == 1:
